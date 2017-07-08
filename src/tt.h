@@ -79,6 +79,8 @@ class TranspositionTable {
 public:
  ~TranspositionTable() { free(mem); }
   void new_search() { generation8 += 8; } // Lower 3 bits are used by PV flag and Bound
+  void infinite_search() { generation8 = 8; }
+  uint8_t generation() const { return generation8; }
   TTEntry* probe(const Key key, bool& found) const;
   int hashfull() const;
   void resize(size_t mbSize);
