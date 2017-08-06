@@ -396,9 +396,9 @@ void Thread::search() {
           // Use aspiration window beginning with ply 5
           if (rootDepth >= 5 * ONE_PLY)
           {
-              //For plies 5...9 use fixed window size, from ply 20 upwards use estimated
+              //For lower plies use fixed window size, later use estimated
               //value volatility
-              delta = (rootDepth >= 10 * ONE_PLY) ? Value(lround(win * valueVola)) : Value(500);
+              delta = Value((rootDepth >= 10 * ONE_PLY) ? std::max(1L,lround(win * valueVola)) : 500);
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
           }
@@ -438,9 +438,9 @@ void Thread::search() {
                 Threads.stopOnPonderhit = false;
               }
 
-              // In case of failing low/high blow up the window and research, otherwise quit
+              // In case of failing low/high adjust the window and research, otherwise quit
               if (bestValue <= alpha || bestValue >= beta) {
-                delta = std::min(delta+400, VALUE_INFINITE);
+                delta = std::min(Value(delta+((rootDepth >= 5 * ONE_PLY) ? delta/8 + 90 : VALUE_INFINITE)), VALUE_INFINITE);
                 alpha = std::max(bestValue - delta, -VALUE_INFINITE);
                 beta = std::min(bestValue + delta, VALUE_INFINITE);
               }
