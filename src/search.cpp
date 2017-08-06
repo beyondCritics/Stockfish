@@ -331,7 +331,8 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To allow referencing (ss-4) and (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, prevBestValue, alpha, beta, delta;
+  double valueVola;
   Move easyMove = MOVE_NONE;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
 
@@ -339,7 +340,10 @@ void Thread::search() {
   for (int i = 4; i > 0; i--)
      (ss-i)->contHistory = &this->contHistory[NO_PIECE][0]; // Use as sentinel
 
-  bestValue = delta = alpha = -VALUE_INFINITE;
+  const double hist = 0.2, win = 1.20, initVola = 0.0;
+
+  bestValue = prevBestValue = delta = alpha = -VALUE_INFINITE;
+  valueVola = initVola;
   beta = VALUE_INFINITE;
   completedDepth = DEPTH_ZERO;
 
@@ -392,7 +396,8 @@ void Thread::search() {
           // Reset aspiration window starting size
           if (rootDepth >= 5 * ONE_PLY)
           {
-              delta = Value(18);
+              //delta = Value(18);
+              delta = Value(lround(win * valueVola));
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
           }
@@ -402,6 +407,7 @@ void Thread::search() {
           // high/low anymore.
           while (true)
           {
+              prevBestValue = bestValue;
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, rootDepth, false, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -434,12 +440,18 @@ void Thread::search() {
               // In case of failing low/high the first time, only recenter aspiration window and
               // re-search, otherwise also start to increase delta
               if (bestValue <= alpha || bestValue >= beta) {
+                delta = std::min(delta+400, VALUE_INFINITE);
                 alpha = std::max(bestValue - delta, -VALUE_INFINITE);
                 beta = std::min(bestValue + delta, VALUE_INFINITE);
-                delta += 400;
+                //delta = Value(std::max(10L, lround(win * valueVola)));
+                //delta += 400;
+
               }
-              else
-                  break;
+              else {
+                if (rootDepth >= 10 * ONE_PLY)
+                  valueVola = hist * valueVola + (1.0 - hist) * abs(bestValue - prevBestValue);
+                break;
+              }
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
