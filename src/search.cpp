@@ -436,7 +436,7 @@ void Thread::search() {
               if (bestValue <= alpha || bestValue >= beta) {
                 alpha = std::max(bestValue - delta, -VALUE_INFINITE);
                 beta = std::min(bestValue + delta, VALUE_INFINITE);
-                delta += delta / 16 + 10;
+                delta += 400;
               }
               else
                   break;
