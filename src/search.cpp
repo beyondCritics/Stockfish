@@ -426,25 +426,20 @@ void Thread::search() {
                   && Time.elapsed() > 3000)
                   sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
 
-              // In case of failing low/high increase aspiration window and
-              // re-search, otherwise exit the loop.
-              if (bestValue <= alpha)
-              {
-                  beta = (alpha + beta) / 2;
-                  alpha = std::max(bestValue - delta, -VALUE_INFINITE);
-
-                  if (mainThread)
-                  {
-                      mainThread->failedLow = true;
-                      Threads.stopOnPonderhit = false;
-                  }
+              if (mainThread && bestValue <= alpha) {
+                mainThread->failedLow = true;
+                Threads.stopOnPonderhit = false;
               }
-              else if (bestValue >= beta)
-                  beta = std::min(bestValue + delta, VALUE_INFINITE);
+
+              // In case of failing low/high the first time, only recenter aspiration window and
+              // re-search, otherwise also start to increase delta
+              if (bestValue <= alpha || bestValue >= beta) {
+                alpha = std::max(bestValue - delta, -VALUE_INFINITE);
+                beta = std::min(bestValue + delta, VALUE_INFINITE);
+                delta += delta / 16 + 10;
+              }
               else
                   break;
-
-              delta += delta / 4 + 5;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
