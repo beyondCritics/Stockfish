@@ -393,11 +393,12 @@ void Thread::search() {
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
 
-          // Reset aspiration window starting size
+          // Use aspiration window beginning with ply 5
           if (rootDepth >= 5 * ONE_PLY)
           {
-              //delta = Value(18);
-              delta = Value(lround(win * valueVola));
+              //For plies 5...9 use fixed window size, from ply 20 upwards use estimated
+              //value volatility
+              delta = (rootDepth >= 10 * ONE_PLY) ? Value(lround(win * valueVola)) : Value(500);
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
           }
@@ -437,18 +438,16 @@ void Thread::search() {
                 Threads.stopOnPonderhit = false;
               }
 
-              // In case of failing low/high the first time, only recenter aspiration window and
-              // re-search, otherwise also start to increase delta
+              // In case of failing low/high blow up the window and research, otherwise quit
               if (bestValue <= alpha || bestValue >= beta) {
                 delta = std::min(delta+400, VALUE_INFINITE);
                 alpha = std::max(bestValue - delta, -VALUE_INFINITE);
                 beta = std::min(bestValue + delta, VALUE_INFINITE);
-                //delta = Value(std::max(10L, lround(win * valueVola)));
-                //delta += 400;
-
               }
               else {
-                if (rootDepth >= 10 * ONE_PLY)
+                //Estimate the value volatility. Neglect the first few plies, since they
+                //are too noisy.
+                if (rootDepth >= 5 * ONE_PLY)
                   valueVola = hist * valueVola + (1.0 - hist) * abs(bestValue - prevBestValue);
                 break;
               }
