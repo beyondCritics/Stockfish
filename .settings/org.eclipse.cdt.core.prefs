@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/ARCH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/ARCH/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/ARCH/value=x86-64-modern
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/COMPCXX/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/COMPCXX/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/COMPCXX/value=/usr/lib/gcc-snapshot/bin/g++
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306.916457692/appendContributed=true
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/ARCH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/ARCH/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/ARCH/value=x86-64-modern
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/COMPCXX/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/COMPCXX/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/COMPCXX/value=/usr/lib/gcc-snapshot/bin/g++
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.base.1972693306/appendContributed=true
