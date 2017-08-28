@@ -799,7 +799,13 @@ namespace {
         && (PvNode || ss->staticEval + 256 >= beta))
     {
         Depth d = (3 * depth / (4 * ONE_PLY) - 2) * ONE_PLY;
-        search<NT>(pos, ss, alpha, beta, d, cutNode, true);
+        Value v = search<NT>(pos, ss, alpha, beta, d, cutNode, true);
+
+        if (   !rootNode
+            && v >= beta + 100 * depth / ONE_PLY
+            && v < VALUE_KNOWN_WIN  // Do not return unproven wins
+            && pos.non_pawn_material(pos.side_to_move()))
+            return v;
 
         tte = TT.probe(posKey, ttHit);
         ttMove = ttHit ? tte->move() : MOVE_NONE;
