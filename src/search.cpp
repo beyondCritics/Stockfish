@@ -69,7 +69,7 @@ namespace {
   // Razoring and futility margin based on depth
   // razor_margin[0] is unused as long as depth >= ONE_PLY in search
   const int razor_margin[] = { 0, 570, 603, 554 };
-  Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
+  Value futility_margin(Depth d, Value g) { return d / ONE_PLY * g; }
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
@@ -721,11 +721,17 @@ namespace {
 
     // Step 7. Futility pruning: child node (skipped when in check)
     if (   !rootNode
-        &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth) >= beta
         &&  eval < VALUE_KNOWN_WIN  // Do not return unproven wins
-        &&  pos.non_pawn_material(pos.side_to_move()))
-        return eval;
+        &&  pos.non_pawn_material(pos.side_to_move())
+        &&  depth < 7 * ONE_PLY)
+    {
+        if (eval - futility_margin(depth, Value(150)) >= beta)
+            return eval;
+        Value rbeta = beta + futility_margin(Depth(depth - 1), Value(125));
+        Value v = qsearch<NonPV, false>(pos, ss, rbeta - 1, rbeta);
+        if (v >= rbeta)
+            return v;
+    }
 
     // Step 8. Null move search with verification search (is omitted in PV nodes)
     if (   !PvNode
