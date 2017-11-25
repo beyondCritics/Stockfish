@@ -508,11 +508,23 @@ bool Position::legal(Move m) const {
   assert(color_of(moved_piece(m)) == us);
   assert(piece_on(square<KING>(us)) == make_piece(us, KING));
 
-  // En passant captures are a tricky special case. Because they are rather
-  // uncommon, we do it simply by testing whether the king is attacked after
-  // the move is made.
-  if (type_of(m) == ENPASSANT)
+  if (type_of(piece_on(from)) != KING && type_of(m) != ENPASSANT) {
+    // A non-king move is legal if and only if it is not pinned or it
+    // is moving along the ray towards or away from the king.
+      return !(pinned_pieces(us) & from) ||
+             aligned(from, to_sq(m), square<KING>(us));
+  } else if (type_of(m) != ENPASSANT)
   {
+    // The moving piece is a king. Check whether the destination
+    // square is attacked by the opponent. Castling moves are checked
+    // for legality during move generation.
+      
+      return type_of(m) == CASTLING || !(attackers_to(to_sq(m)) & pieces(~us));
+      
+  } else {
+    // En passant captures are a tricky special case. Because they are rather
+    // uncommon, we do it simply by testing whether the king is attacked after
+    // the move is made.
       Square ksq = square<KING>(us);
       Square to = to_sq(m);
       Square capsq = to - pawn_push(us);
@@ -526,17 +538,6 @@ bool Position::legal(Move m) const {
       return   !(attacks_bb<  ROOK>(ksq, occupied) & pieces(~us, QUEEN, ROOK))
             && !(attacks_bb<BISHOP>(ksq, occupied) & pieces(~us, QUEEN, BISHOP));
   }
-
-  // If the moving piece is a king, check whether the destination
-  // square is attacked by the opponent. Castling moves are checked
-  // for legality during move generation.
-  if (type_of(piece_on(from)) == KING)
-      return type_of(m) == CASTLING || !(attackers_to(to_sq(m)) & pieces(~us));
-
-  // A non-king move is legal if and only if it is not pinned or it
-  // is moving along the ray towards or away from the king.
-  return   !(pinned_pieces(us) & from)
-        ||  aligned(from, to_sq(m), square<KING>(us));
 }
 
 
