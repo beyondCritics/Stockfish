@@ -66,6 +66,7 @@ struct RootMove {
                             : m.previousScore < previousScore;
   }
 
+  void log_pv(Position& pos, std::string prefix);
   Value score = -VALUE_INFINITE;
   Value previousScore = -VALUE_INFINITE;
   int selDepth = 0;

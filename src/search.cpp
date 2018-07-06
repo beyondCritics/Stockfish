@@ -36,6 +36,7 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include "san.h"
 
 namespace Search {
 
@@ -208,11 +209,38 @@ void MainThread::search() {
   }
   else
   {
+      if (Options["Write Search Log"])
+      {
+          Log log(Options["Search Log Filename"]);
+          log << "\nSearching: " << rootPos.fen()
+              << "\ninfinite: " << Limits.infinite
+              << " time: " << Limits.time[rootPos.side_to_move()]
+              << " increment: " << Limits.inc[rootPos.side_to_move()]
+              << " moves to go: " << Limits.movestogo
+              << "\n"
+              << std::endl;
+      }
+
       for (Thread* th : Threads)
           if (th != this)
               th->start_searching();
 
       Thread::search(); // Let's start searching!
+      if (Options["Write Search Log"])
+      {
+          int elapsed = Time.elapsed();
+          //Time::point elapsed = Time::now() - SearchTime + 1;
+
+          Log log(Options["Search Log Filename"]);
+          log << "Nodes: " << Threads.nodes_searched()
+              << "\nNodes/second: " << Threads.nodes_searched() * 1000 / elapsed
+              << "\nBest move: " << move_to_san(rootPos, rootMoves[0].pv[0]);
+
+          StateInfo st;
+          rootPos.do_move(rootMoves[0].pv[0], st, rootPos.gives_check(rootMoves[0].pv[0]));
+          log << "\nPonder move: " << move_to_san(rootPos, rootMoves[0].pv[1]) << std::endl;
+          rootPos.undo_move(rootMoves[0].pv[0]);
+      }
   }
 
   // When we reach the maximum depth, we can arrive here without a raise of
@@ -279,6 +307,7 @@ void MainThread::search() {
 
 void Thread::search() {
 
+  bool bSewingMachine = Options["Show Fail High and Fail Low"];
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
   Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
@@ -402,7 +431,8 @@ void Thread::search() {
               if (   mainThread
                   && multiPV == 1
                   && (bestValue <= alpha || bestValue >= beta)
-                  && Time.elapsed() > 3000)
+                  && Time.elapsed() > 3000
+                  && bSewingMachine)
                   sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
 
               // In case of failing low/high increase aspiration window and
@@ -433,7 +463,15 @@ void Thread::search() {
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
+          {
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+              if (Options["Write Search Log"])
+              {
+                  Log log(Options["Search Log Filename"]);
+                  std::string s = pretty_pv(rootDepth, rootMoves[0].score, Time.elapsed());
+                  rootMoves[0].log_pv(rootPos, s);
+              }
+          }
       }
 
       if (!Threads.stop)
@@ -1615,6 +1653,34 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
   return ss.str();
 }
 
+//
+// We need a "Plastic" position to create the log entries (cannot be const).
+// This method is used to write the current pv string to the log file.
+//
+void RootMove::log_pv(Position &pos, string prefix)
+{
+    if (Options["Write Search Log"])
+    {
+        Log log(Options["Search Log Filename"]);
+
+        StateInfo state[MAX_PLY], *st = state;
+        std::string logpv = prefix;
+        for (Move m : pv)
+        {
+            assert(MoveList<LEGAL>(pos).contains(m));
+
+            std::string s = move_to_san(pos, m);
+            logpv += s;
+            logpv += " ";
+            pos.do_move(m, *st++, pos.gives_check(m));
+        }
+
+        log << logpv << std::endl;
+
+        for (size_t i = pv.size(); i > 0;)
+            pos.undo_move(pv[--i]);
+    }
+}
 
 /// RootMove::extract_ponder_from_tt() is called in case we have no ponder move
 /// before exiting the search, for instance, in case we stop the search during a
