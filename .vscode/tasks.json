@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "mingw build stockfish",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-C",
+                "/home/olive/git/stockfish/src",
+                "build",
+                "ARCH=x86-64-modern",
+                "COMP=mingw"                
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}   
