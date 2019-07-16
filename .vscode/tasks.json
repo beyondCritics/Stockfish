@@ -2,18 +2,42 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "mingw build stockfish",
+            "label": "mingw build",
             "type": "shell",
             "command": "make",
             "args": [
-                 "build",
+                "-C",
+                "\"${workspaceFolder}\\src\"",
+                "build",
                 "ARCH=x86-64-modern",
-                "COMP=mingw"                
+                "COMP=mingw"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "mingw profile build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-C",
+                "\"${workspaceFolder}\\src\"",
+                "profile-build",
+                "ARCH=x86-64-modern",
+                "COMP=mingw"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }   

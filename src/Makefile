@@ -147,7 +147,7 @@ endif
 
 ### 3.1 Selecting compiler (default = gcc)
 
-CXXFLAGS += -Wall -Wcast-qual -fno-exceptions -std=c++11 $(EXTRACXXFLAGS)
+CXXFLAGS += -Wall -Wcast-qual -fno-exceptions -std=c++11 -march=native $(EXTRACXXFLAGS)
 DEPENDFLAGS += -std=c++11
 LDFLAGS += $(EXTRALDFLAGS)
 
@@ -358,7 +358,7 @@ ifeq ($(OS), Android)
 	LDFLAGS += -fPIE -pie
 endif
 
-
+$(CXX):=ccache $(CXX)
 ### ==========================================================================
 ### Section 4. Public targets
 ### ==========================================================================
@@ -428,8 +428,8 @@ profile-build: config-sanity objclean profileclean
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) objclean
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_use)
 	@echo ""
-	@echo "Step 4/4. Deleting profile data ..."
-	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) profileclean
+	@echo "Step 4/4. Not(!) deleting profile data ..."
+	#$(MAKE) ARCH=$(ARCH) COMP=$(COMP) profileclean
 
 strip:
 	strip $(EXE)

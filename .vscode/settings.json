@@ -5,7 +5,7 @@
     ],
     "terminal.integrated.env.windows": {
         "CHERE_INVOKING": "1",
-        "MSYSTEM": "MINGW64",
+         "MSYSTEM": "MINGW64",
         "MSVSCODE": "1"
     },
 }

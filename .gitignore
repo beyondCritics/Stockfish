@@ -1,7 +1,16 @@
-stockfish.*
+*.o
 *.depend
+stockfish.*
 
+# Profile data
+*.gcda
+*.gcno
+profdir
+*.profraw
 
+# Visual Studio Code
+
+# Sourcetrail
 *srctrl*
 
 
