@@ -6,9 +6,7 @@
             "type": "shell",
             "command": "make",
             "args": [
-                "-C",
-                "/home/olive/git/stockfish/src",
-                "build",
+                 "build",
                 "ARCH=x86-64-modern",
                 "COMP=mingw"                
             ],
