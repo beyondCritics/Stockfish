@@ -39,7 +39,7 @@ PGOBENCH = ./$(EXE) bench
 OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
-
+	
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
 ifeq ($(KERNEL),Linux)
@@ -358,7 +358,8 @@ ifeq ($(OS), Android)
 	LDFLAGS += -fPIE -pie
 endif
 
-$(CXX):=ccache $(CXX)
+CXX:=ccache $(CXX)
+
 ### ==========================================================================
 ### Section 4. Public targets
 ### ==========================================================================
@@ -416,7 +417,7 @@ help:
 build: config-sanity
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) all
 
-profile-build: config-sanity objclean profileclean
+profile-build: config-sanity objclean
 	@echo ""
 	@echo "Step 1/4. Building instrumented executable ..."
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_make)

@@ -10,7 +10,8 @@
                 "\"${workspaceFolder}\\src\"",
                 "build",
                 "ARCH=x86-64-modern",
-                "COMP=mingw"
+                "COMP=mingw",
+                "-j",
             ],
             "group": {
                 "kind": "build",
@@ -29,7 +30,28 @@
                 "\"${workspaceFolder}\\src\"",
                 "profile-build",
                 "ARCH=x86-64-modern",
-                "COMP=mingw"
+                "COMP=mingw",
+                "-j",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "mingw profile use",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-C",
+                "\"${workspaceFolder}\\src\"",
+                "gcc-profile-use",
+                "ARCH=x86-64-modern", 
+                "COMP=mingw",
+                "-j",
             ],
             "group": {
                 "kind": "build",
