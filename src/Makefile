@@ -21,11 +21,13 @@
 ### Section 1. General Configuration
 ### ==========================================================================
 
-### Executable name
-ifeq ($(COMP),mingw)
-EXE = stockfish.exe
+### Establish the operating system name and the executable name
+KERNEL = $(shell uname -s)
+OS = $(shell uname -o)
+ifeq ($(KERNEL),Linux)
+	EXE = stockfish-ae
 else
-EXE = stockfish
+	EXE = stockfish-ae.exe
 endif
 
 ### Installation dir definitions
@@ -40,12 +42,6 @@ OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
 	
-### Establish the operating system name
-KERNEL = $(shell uname -s)
-ifeq ($(KERNEL),Linux)
-	OS = $(shell uname -o)
-endif
-
 ### ==========================================================================
 ### Section 2. High-level Configuration
 ### ==========================================================================
@@ -147,7 +143,7 @@ endif
 
 ### 3.1 Selecting compiler (default = gcc)
 
-CXXFLAGS += -Wall -Wcast-qual -fno-exceptions -std=c++11 -march=native $(EXTRACXXFLAGS)
+CXXFLAGS += -Wall -Wcast-qual -fno-exceptions -std=c++14 -march=native $(EXTRACXXFLAGS)
 DEPENDFLAGS += -std=c++11
 LDFLAGS += $(EXTRALDFLAGS)
 
