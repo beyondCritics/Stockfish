@@ -9,6 +9,10 @@ profdir
 *.profraw
 
 # Visual Studio Code
+GPATH
+GRTAGS
+GTAGS
+
 
 # Sourcetrail
 *srctrl*

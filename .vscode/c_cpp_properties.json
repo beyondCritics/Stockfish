@@ -3,7 +3,9 @@
         {
             "name": "Msys2",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:/msys64/mingw64/include/c++/9.2.0",
+                "C:/msys64/mingw64/include/c++/9.2.0/x86_64-w64-mingw32"
             ],
             "defines": [
                 "_DEBUG",
@@ -11,9 +13,9 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.17763.0",
-            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++14",
             "intelliSenseMode": "gcc-x64",
             "browse": {
                 "path": [

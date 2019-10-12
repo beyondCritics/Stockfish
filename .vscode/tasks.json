@@ -14,12 +14,16 @@
                 "-j",
             ],
             "group": {
-                "kind": "build",
+                "kind": "build", 
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/src"
+                ]
+            }
         },
         {
             "label": "mingw profile build",
@@ -37,9 +41,13 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/src"
+                ]
+            }
         },
         {
             "label": "mingw profile use",
@@ -49,7 +57,7 @@
                 "-C",
                 "\"${workspaceFolder}\\src\"",
                 "gcc-profile-use",
-                "ARCH=x86-64-modern", 
+                "ARCH=x86-64-modern",
                 "COMP=mingw",
                 "-j",
             ],
@@ -57,9 +65,13 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/src"
+                ]
+            }
         }
     ]
-}   
+}
