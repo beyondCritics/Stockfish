@@ -24,6 +24,8 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <thread>
 
 #include "evaluate.h"
 #include "misc.h"
@@ -253,7 +255,11 @@ void MainThread::search() {
   // until the GUI sends one of those commands.
 
   while (!Threads.stop && (ponder || Limits.infinite))
-  {} // Busy wait for a stop or a ponder reset
+  {  
+    using namespace std::chrono_literals;
+
+    std::this_thread::sleep_for(100ms);
+  } 
 
   // Stop the threads if not already stopped (also raise the stop if
   // "ponderhit" just reset Threads.ponder).
