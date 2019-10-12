@@ -29,6 +29,7 @@
 #endif
 
 #include <windows.h>
+#include <tchar.h>
 // The needed Windows API for processor groups could be missed from old Windows
 // versions, so instead of calling them directly (forcing the linker to resolve
 // the calls at compile time), try to load them at runtime. To do this we need
@@ -134,7 +135,7 @@ const string engine_info(bool to_uci) {
   string month, day, year;
   stringstream ss, date(__DATE__); // From compiler, format is "Sep 21 2008"
 
-  ss << "Stockfish-ae" << Version << setfill('0');
+  ss << "Stockfish-ae " << Version << setfill('0');
 
   if (Version.empty())
   {
@@ -146,7 +147,7 @@ const string engine_info(bool to_uci) {
      << (HasPext ? " BMI2" : (HasPopCnt ? " POPCNT" : ""))
      << (to_uci  ? "\nid author ": " by ")
      << "T. Romstad, M. Costalba, J. Kiiski, G. Linscott"
-     << "Tweaked for interactive analysis by O. Roese";
+     << "\nTweaks from O. Roese";
 
   return ss.str();
 }
@@ -239,7 +240,7 @@ int best_group(size_t idx) {
   DWORD byteOffset = 0;
 
   // Early exit if the needed API is not available at runtime
-  HMODULE k32 = GetModuleHandle("Kernel32.dll");
+  HMODULE k32 = GetModuleHandle(_T("Kernel32.dll"));
   auto fun1 = (fun1_t)(void(*)())GetProcAddress(k32, "GetLogicalProcessorInformationEx");
   if (!fun1)
       return -1;
@@ -308,7 +309,7 @@ void bindThisThread(size_t idx) {
       return;
 
   // Early exit if the needed API are not available at runtime
-  HMODULE k32 = GetModuleHandle("Kernel32.dll");
+  HMODULE k32 = GetModuleHandle(_T("Kernel32.dll"));
   auto fun2 = (fun2_t)(void(*)())GetProcAddress(k32, "GetNumaNodeProcessorMaskEx");
   auto fun3 = (fun3_t)(void(*)())GetProcAddress(k32, "SetThreadGroupAffinity");
 
